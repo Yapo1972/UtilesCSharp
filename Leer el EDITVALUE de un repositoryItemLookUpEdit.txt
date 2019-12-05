@@ -1,0 +1,11 @@
+       private void repositoryItemLookUpEdit2_Validating(object sender, CancelEventArgs e)
+        {
+            int valor;
+            int.TryParse((sender as LookUpEdit).EditValue.ToString(), out valor);
+            if( codificador_de_AveriasTableAdapter.GetData().Where(x => x.IDAveria == valor).Select(x => x.EsAveria).FirstOrDefault()){
+                MessageBox.Show("ES AVERIA");
+            }
+        }
+
+Como se puede ver en este ejemplo en el evento Validating se trata el parametro sender como un LookUpEdit y entonces de esta forma se puede
+leer el EditValue que luego se tratara de la manera que se deba tratar. Recordar que el EditValue siempre es el campo ValueMember.

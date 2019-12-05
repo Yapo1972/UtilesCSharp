@@ -1,0 +1,11 @@
+         private void enlaceAveriasSubDivisionesGridControl_DoubleClick(object sender, EventArgs e)
+        {
+           DataRow FilaActiva = GVMaquinas.GetFocusedDataRow();
+            Point pt = GVAverias.GridControl.PointToClient(Control.MousePosition);
+            GridHitInfo info = GVAverias.CalcHitInfo(pt);
+
+            if (FilaActiva == null || !(info.InRow || info.InRowCell)) return;
+            int IDMaquina = Convert.ToInt32(FilaActiva["IDMaquina"]);
+	}
+
+En este procedimiento se calcula si el punto donde se dio el dobleclick es sobre una celda o fuera de ella.

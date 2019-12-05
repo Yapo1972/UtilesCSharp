@@ -1,0 +1,23 @@
+our machine.config file already contains certain values such as connection strings, membership provider and role manager setup and your web.config file inherits all settings from there.
+
+The machine.config file on your machine is set up to add a membership provider using a connection string called LocalSqlServer. So when you use the Authorize attribute, it first tries to use that provider instead of Identity. The same goes for the role manager.
+
+You can disable this by clearing the existing providers in your web.config like this:
+
+<configuration>
+    ....
+    <system.web>
+        ...
+        <membership>
+            <providers>
+                <clear/>
+            </providers>
+        </membership>
+------------>>>>>>        <roleManager enabled="false" />
+    </system.web>
+</configuration>
+Additionally you may need to add this to your appSettings:
+
+<appSettings> 
+    <add key="enableSimpleMembership" value="false" /> 
+</appSettings>

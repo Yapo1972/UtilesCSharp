@@ -1,0 +1,8 @@
+Para asignarle mas tiempo a una consulta de un TableAdapter de un dataset lo que se tiene que hacer es:
+1- ir al fichero del Dataset.designer.cs
+2- Localizar la funcion virtual que representa la consulta 
+3- Dentro de esta consulta variar el valor  de la siguiente manera this.Adapter.SelectCommand.CommandTimeout = 500;
+
+Para localizar la funcion virtual hacer una busqueda por el nombre de la consulta
+Debe buscarse:
+public virtual NombredelDataSet.NombredelAdaptadorDataTable NombredeLaConsulta

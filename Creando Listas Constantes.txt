@@ -1,0 +1,4 @@
+        public static readonly IList<String> Metrics = new ReadOnlyCollection<string>
+         (new List<String> {
+             "AdministradorG","AdministradorC","VerificaA","VerificaNC","Documenta","GestorProceso","RegistraNC","ManipulaAcciones"
+         });

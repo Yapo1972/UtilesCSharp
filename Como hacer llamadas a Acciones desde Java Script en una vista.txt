@@ -1,0 +1,18 @@
+Lo primero que se debe hacer es Instalar el paquete NuGet JsAction
+Luego en la accion que se quiera utilizar desde la vista colocarle el atributo[JsAction()] importante haber using JsAction
+En la vista usar
+@using JsActions
+
+despues de que se utlice el script de JQuery
+usar
+Html.JsActions()
+
+y ya en el codigo javascript hacer la llamada de la siguiente forma
+
+JsActions.NombreContralodor.Action(Parametros)
+
+Recordar que todo esto tambien se puede hacer usando la funcion
+
+$.ajax({  url:'@Url.Action('NombreAccion', 'NombreControlador'),
+          data: { 'NombreParametro':'Valor','NombreParametro':'Valor',....}
+
