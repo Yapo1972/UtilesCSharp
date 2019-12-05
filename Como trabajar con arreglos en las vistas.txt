@@ -1,0 +1,35 @@
+            indice = 0;
+            Opciones = [];
+            // Esta funcion es para ir agregando elementos a la tabla cuando se presione un Boton con id = "AgregandoProducto"
+            $('#AgregandoProducto').click(() => {
+                $('#CuerpoTabla').append('<tr><td><select class="form-control" name="CodigoProducto[' + indice + ']" id="CodigoP' + indice + '"  style="max-width:100%;"></select></td>' +
+                    '<td>' +
+                    '<input type="number" class="form-control" name="CantidadOrdenada[' + indice + ']"/>' +
+                    '</td>' +
+                    '<th>' +
+                    '<button type="button" class="btn btn-info EliminandoProducto" title="Eliminar producto">' +
+                    '<span class="glyphicon glyphicon-minus"></span>' +
+                    '</button>' +
+                    '</th>' +
+                    '</tr>');
+                var SelectAgregado = $('#CodigoP' + indice);
+                for (i = 0; i < Opciones.length; i++) {
+                    SelectAgregado.append('<option value="' + Opciones[i].Id + '">' + Opciones[i].Descripcion + '</option>')
+                }
+                indice++;
+                $('.EliminandoProducto').click(function () {
+                    $(this).parents('tr').remove();
+                    indice = 0;
+                    // A continuacion debo reorganizar los indices primero de los codigo de los productos y luego el de la cantidad 
+                    //Esto es vital hacerlo porque cuando uno de los indices no contiene elementos, entonces no se sigue transmitiendo el arreglo
+                    $('#CuerpoTabla select').each(function (item) {
+                        $(this).attr('name', 'CodigoProducto[' + item + ']');
+                        $(this).attr('id', 'CodigoP' + item );
+                        indice++;
+                    });
+                    $('#CuerpoTabla input').each(function (item) {
+                        $(this).attr('name', 'CantidadOrdenada[' + item + ']');
+                    });
+
+                });
+            });

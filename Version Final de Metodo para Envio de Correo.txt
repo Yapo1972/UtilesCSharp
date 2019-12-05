@@ -1,0 +1,70 @@
+       /// <summary>
+        /// Metodo para el envio de un correo electronico.
+        /// </summary>
+        /// <param name="DireccionDestinatario">
+        /// Direccion del destinatario o destinatarios separados por ;
+        /// </param>
+        /// <param name="Asunto">
+        /// Lo que va a aparecer en el asunto del mensaje
+        /// </param>
+        /// <param name="CuerpoMensaje">
+        /// Cuerpo del mensaje
+        /// </param>
+        /// <param name="FicheroAdjunto">
+        /// Nombre del fichero que se quiere adjuntar. En caso de que no se desee adjuntar ningun fichero este parametro
+        /// sera igual a ""
+        /// </param>
+        /// <returns>
+        /// Va a retornar true si fue posible enviar el correo, false en caso contrario
+        /// </returns>
+        private bool EnviarCorreo(string DireccionDestinatario, string Asunto, string CuerpoMensaje,
+            string FicheroAdjunto = "")
+        {
+         
+            string Host = "192.168.10.3";
+            string UsuarioSMTP = "economia.software@compacto.co.cu";
+            string Clave = "Econ@123";
+            int PuertoSMTP = 25;
+            string NombreMostrarReceptor =
+                "Departamento de Economia COMPACTO Caribe S.A"; // Este es el nombre que se va a mostrar al receptor del mensaje
+
+            // Inicializo el Cliente SMTP
+            var ConexionSMTP = new SmtpClient(Host, PuertoSMTP);
+            ConexionSMTP.Credentials = new NetworkCredential(UsuarioSMTP, Clave, "");
+
+            //Creo el correo electronico
+            MailMessage Mensaje = new MailMessage();
+            try
+            {
+                //Dividiendo los correos que vienen delimitados por el ;
+                foreach (var s in DireccionDestinatario.Split(';'))
+                {
+                    Mensaje.To.Add(new MailAddress(s));
+                }
+
+                //Configurando los parametros del mensaje
+                Mensaje.From = new MailAddress(UsuarioSMTP, NombreMostrarReceptor);
+                Mensaje.Subject = Asunto;
+                Mensaje.Body = CuerpoMensaje;
+
+                //En el caso de que se envie el nombre de un fichero adjunto se adiciona al mensaje
+                if (FicheroAdjunto != "")
+                {
+                    Attachment Adjunto = new Attachment(FicheroAdjunto);
+                    Mensaje.Attachments.Add(Adjunto);
+                    ConexionSMTP.Send(Mensaje);
+                    Adjunto.Dispose();
+                    Mensaje.Attachments.RemoveAt(0);
+                }
+                else
+                {
+                    ConexionSMTP.Send(Mensaje);
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }

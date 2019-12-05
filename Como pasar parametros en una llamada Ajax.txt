@@ -1,0 +1,61 @@
+                var fichero = $('#NombreFichero').get(0).files;
+
+				//Para desde JavaScript hacer una llamada Ajax a una accion de un controlador lo primero que hay que hacer es chequear
+				//si el browser soporta FormData
+                if (window.FormData !== undefined) {
+
+                	//Mediante esta sentencia estoy creando la variable que va a almacenar los parametros
+                    // Crear el objeto FormData 
+                    var fileData = new FormData();
+
+
+                	// esto es un tratamiento especifico para el caso en el cual quiero mandar un fichero del cliente como 
+                	// parametro a una funcion en servidor
+                	// OJO que en este caso tuvo que estar definido una form con enctype = "multipart/form-data"
+                	// y ademas debio haberse declarado
+                	//'<input type="file" name="NombreFichero" id="NombreFichero"/>
+                	//Estos dos pasos garantizan que el fichero se va a enviar al servidor
+
+                	//A continuacion mediante JQuery obtengo el valor del input type file
+                	//Ojo que en la propiedad files es donde estan alojados todos los ficheros.
+                	//Se utiliza mucho para el caso de las validaciones y demas.
+                    var fileUpload = $("#NombreFichero").get(0);
+                    var files = fileUpload.files;
+
+                    //Esta es la forma de agregar el fichero que esta en el input. El primer fichero unicamente.
+                    //Esto se va a recibir en la accion como un HttpPostedFileBase NombreFichero y se le da el tratamiento en la accion
+                    fileData.append("NombreFichero", files[0]);
+
+ 
+
+                    // Adicionar algun parametro que se requiera.
+                    //Esta es la forma normal, es un par nombre del parametro y valor
+                    fileData.append('Tipo', "4");
+
+                    //Aqui ya se hace la llamada Ajax a la accion utilizando para ello @Url.Action para que me devuelva la URL en tiempo
+                    //de corrida. OJO que es MUY IMPORTANTE poner en false los valores contentType y processData porque sino JQuery
+                    //al procesar estos datos nos devuelve un error.
+                    //fijarse que en data se envia el FormData que hemos creado y asi mismo se recibe en la accion
+                    $.ajax({
+                        url: '@Url.Action("ChequearFichero","Home")',
+                        type: "POST",
+                        contentType: false, // Diciendole al JQuery que no coloque ningun encabezamiento en la peticion Ajax
+                        processData: false, // Diciendo al JQuery que no procese los datos
+                        data: fileData,
+                        success: function (result) {
+                            if (result.length > 0) {
+                                var Errores = "Errores encontrados en el fichero\n\n";
+                                for (i = 0; i < result.length; i++)
+                                    Errores += result[i] + "\n\n";
+                                alert(Errores);
+                            }
+                        },
+                        error: function (err) {
+                            alert(err.statusText);
+                        }
+                    });
+                } else {
+                    alert("FormData no se soporta.");
+                }
+
+

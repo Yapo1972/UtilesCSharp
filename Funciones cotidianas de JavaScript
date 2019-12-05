@@ -1,0 +1,103 @@
+           $(document).ready(function () {
+
+            //Esto se utiliza para calcular los totales de un grupo de registros
+            //El lugar donde se va a colocar el total debe tener la clase Total y el id debe ser el
+            //nombre de la clase que se quiere totalizar
+            //Previamente se debe haber colocado en cada elemento a totalizar la clase que es igual al id del total
+            $('.Total').each(function () {
+                var clase = '.' + this.id;
+                var Total = 0.0;
+                $(clase).each(function () {
+                    var valor = parseFloat($(this).text().replace(',', '.'));
+                    if (!isNaN(valor))
+                        Total += valor;
+                });
+                $(this).text(Total.toFixed(1));
+
+
+            });
+
+
+            //Esto se utiliza para calcular el porciento
+            //Donde se va  a colocar el porciento debe tener la clase Porciento y ademas debe
+            //tener dos atributos data-total con el id de la celda que contiene el total
+            //data-valor con el id de la celda con valor al cual se le va a calcular el porciento con respecto al total
+            //Previamente se le debe haber colocado este id a las celdas donde estan ubicados el valor y el total
+            $('.Porciento').each(function () {
+                var idTotal = '#' + $(this).data().total;
+                var idValor = '#' + $(this).data().valor;
+                var Total = parseFloat($(idTotal).text().replace(',', '.'));
+                var Valor = parseFloat($(idValor).text().replace(',', '.'));
+                if (!isNaN(Total) && !isNaN(Valor) && Total > 0) {
+                    $(this).text(parseFloat(Valor * 100 / Total).toFixed(2) + ' %');
+                }
+                else {
+                    $(this).text('0.00 %');
+                }
+            });
+
+
+            //Esto se utiliza para poner en un color diferenciado aquellos valores que son mayores que cero
+            //Los valores a los que se le quiere realizar este proceso deben tener la clase pend
+            //En caso de que se quiera otra condicion sustituir if( valor> 0 ) por la condicion que se requiera
+            $('.pend').each(function () {
+                var valor = parseFloat($(this).text().replace(',', '.'));
+                if (valor > 0) {
+                    $(this).css('backgroundColor', 'purple');
+                    $(this).parent().css('backgroundColor', '#c40713');
+                    $(this).parent().css('text-shadow', '1px 2px black');
+
+                    $(this).parent().css('color', 'white');
+
+                }
+            });
+
+
+            //Esto es para hacer despliegue de la informacion usando botones de despliegue
+            //El boton debe tener la clase BtnDespliegue y el id es el nombre de la clase que se quiere cambiar
+            // de estado( visible a oculto o de oculto a visible por eso es el toggle)
+            //En caso de que existan varios niveles de despliegue para garantizar que el anidamiento funcionen
+            //este boton debe tener el atributo data-nivel y el padre de este boton(los del mismo nivel que el esta anidando)
+            //debe tener el atributo data - proximo y deben tener el mismo valor
+            //IMPORTANTE QUE data-proximo=1 y data-nivel=1.
+            //El $('.TotalGeneral').show() se utiliza para el caso de la ultima fila de un nivel para que tenga un tope
+            //Este tope puede cambiar de una aplicacion a otra.
+            $('.BtnDespliegue').click(function () {
+                var clase = '.' + this.id;
+                $(clase).toggle();
+                if (!($(clase).is(':visible'))) {
+                    var nivel = parseInt($(this).data().nivel);
+                    if ( !isNaN( nivel ) ) {
+                        var atributo = "[data-proximo=" + nivel + "]";
+                        $(clase).nextUntil(atributo).hide();
+                        $('.TotalGeneral').show();
+                    }
+
+                }
+
+            });
+
+            //Este es el codigo que se utiliza para hacer una exportacion burda de la tabla con el id PlanDelAno
+            //OJO que formats  puede ademas incluir "txt","xlsx","xls" para permitir la exportacion a esos formatos
+            //los tres ficheros scripts necesarios son:
+            @*//<script src="~/Scripts/xlsx.full.min.js"></script>
+            //<script src="~/Scripts/FileSaver.min.js"></script>
+            //<script src="~/Scripts/tableexport.min.js"></script>*@
+            $('#PlanDelAno').tableExport({
+                formats:['csv']
+            });
+
+            //Este es el codigo que se utiliza para hacer un filtraje en una tabla
+            //La tabla debe tener el id="iddelinput+Tabla"
+            //Se debe crear un input type text con la clase filtroEntrada que es el que filtrara
+            $(".filtroEntrada").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                var idTabla = '#' + this.id + 'Tabla';
+                var filtro = idTabla + ' tr:not(:first-of-type)';
+                $(filtro).filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            })
+
+
+});

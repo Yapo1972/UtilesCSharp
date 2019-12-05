@@ -1,0 +1,16 @@
+@{
+    AjaxOptions opciones = new AjaxOptions
+    {
+        UpdateTargetId = "DatosProduccion",// Id del Div que quiero Actualizar con la llamada Ajax
+        LoadingElementId = "Cargando" // Id del elemento que indica que se estan cargando los datos desde el servidor
+
+
+    };
+}
+
+
+   @using (Ajax.BeginForm("ResumenesOrdenDespacho", opciones))   // ResumenesOrdenDespacho es el Action que retorna el Partial View que llena el div
+    {
+        @Html.Action("SolicitudFiltroFecha")
+    }
+    <h4 class="alert-info" id="Cargando" style="display:none;">Solicitando datos al servidor......</h4>

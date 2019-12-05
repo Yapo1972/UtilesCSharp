@@ -1,0 +1,28 @@
+Este es el codigo Java Script para el elemento <input type="file" id="ficheroExportar"/>
+
+            $('#ficheroExportar').change(function (e) {
+                var valor = e.target.files[0];
+                var datos = new FormData();
+                datos.append("file", valor);
+                if (valor.size > 0 && confirm('Esta seguro de querer importar este fichero XLSX?. Los datos actuales de este parte se eliminaran.'))
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("exportarFicheroExcel")',
+                        contentType: false,
+                        processData: false,
+                        data: datos,
+                        success: function (result) {
+                            console.log(result);
+                        }
+                    });
+            });
+
+Luego en el controlador, la accion debe leer el fichero de la siguiente forma:
+
+        [HttpPost]
+        public JsonResult exportarFicheroExcel()
+        {
+            var fil = Request.Files[0];
+            return Json(true, JsonRequestBehavior.AllowGet);
+        }
+

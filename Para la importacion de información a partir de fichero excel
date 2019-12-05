@@ -1,0 +1,104 @@
+Para la importacion de información a partir de ficheros excel se creo la clase datosExcel que a su vez implementa la interface
+IFicherosExcel. Importante es que hay que utilizar el paquete EPPlus que incluye la posibilidad de hacer un using OfficeOpenXml;
+
+Esta interface es la que me entrega los dos metodos que se van a utilizar principalmente desde la aplicacion
+
+ImportarFichero(System.Web.HttpPostedFileBase NombreFichero, bool SoloChequear = false);
+Este se encarga de hacer la importacion del fichero excel que se le pasa como parametro.
+Ojo que el fichero que se envia es un HttpPostedFileBase y debe haber sido recibido por un form con enc-type = "multipart/form-data".
+Cuando SoloChequear es true, no se hace la importación solo se chequea si el fichero excel no tiene errores y en caso contrario coloca en las FilasConErrores una string por cada error encontrado o en el caso de que sea una fila los valores de esta fila.
+
+List<string> FilasConErrores();
+Este metodo devuelve las filas que han tenido errores.
+Normalmente lo uso para hacer validaciones antes de que se importen los datos e informar de estos errores.
+
+
+MUY IMPORTANTE es que para cada caso en particular es necesario haber definido las clases de los ficheros excel que se van a utilizar en la aplicacion. Estas clases deben heredar de la clase abstracta con tipo datosExcel<T> donde T es el tipo de dato que se va a importar desde el excel.
+
+A continuacion un ejemplo 
+
+    public class ExcelVacaciones : datosExcel<RecursosHumanos.Models.Bases_de_Datos.Pago_por_vacaciones>
+    {
+        public ExcelVacaciones()
+        {
+        //En el constructor lo primero que tengo que hacer es definir el formato del fichero excel
+        //Esto es case sensitive y la primera fila del fichero excel debe tener las columnas en este mismo orden
+        //No importa si tiene mas columnas, las primeras tienen que ser estas.
+            FormatoFichero = new string[]
+            {
+                "codexp",
+                "mes",
+                "año",
+                "horas",
+                "dias",
+                "devengado"
+            };
+        }
+
+        public override bool AgregarFila(Pago_por_vacaciones fila)
+        {
+
+        //Este es el metodo abstracto que se llama cuando se quiere agregar una fila
+        //Aqui se hace el tratamiento de almacenamiento segun la aplicacion.
+
+            Pago_por_vacaciones datos;
+            using (var db = new RecursosHumanos.Models.Bases_de_Datos.RecursosHumanos())
+            {
+                if ((datos = db.Pago_por_vacaciones.FirstOrDefault(x => x.IDTrabajador == fila.IDTrabajador && x.IDMes == fila.IDMes)) != null)
+                {
+                    datos.Horas = fila.Horas;
+                    datos.Dias = fila.Dias;
+                    datos.Devengado = fila.Devengado;
+                    db.Entry(datos).State = System.Data.Entity.EntityState.Modified;
+                }
+                else
+                {
+                    db.Pago_por_vacaciones.Add(fila);
+                }
+                db.SaveChanges();
+                OperacionesBD.ActualizarDatosMensuales(fila.IDTrabajador.Value,
+                                       Utiles.ConceptosActualizacion.Vacaciones,
+                                       fila.Horas,
+                                       fila.Dias,
+                                       fila.Devengado);
+
+            }
+            return true;
+        }
+
+        public override bool FilaValida(ExcelWorksheet hoja, int i)
+        {
+
+        //Este metodo abstracto valida si la información que viene en la fila es valida.
+        // Tener en cuenta que para acceder al valor de la celda x de la fila i es de la forma 
+        // hoja.Cells[i, x].Text
+
+            if (ObtenerIDTrabajadorExpediente(hoja.Cells[i, 1].Text) == 0 ||
+                !int.TryParse(hoja.Cells[i, 2].Text, out int mes) ||
+                !int.TryParse(hoja.Cells[i, 3].Text, out int ano) ||
+                !decimal.TryParse(hoja.Cells[i, 4].Text, out decimal result) ||
+                !decimal.TryParse(hoja.Cells[i, 5].Text, out result) ||
+                !decimal.TryParse(hoja.Cells[i, 5].Text, out result)) return false;
+            return true;
+        }
+
+        public override Pago_por_vacaciones ObtenerFila(ExcelWorksheet hoja, int i)
+        {
+
+        //Este es el metodo que se utiliza para Obtener una fila del libro de excel y 
+        //devolver el tipo que se esta almacenando en la base de datos.
+
+
+            Pago_por_vacaciones resultado = new Pago_por_vacaciones();
+            int.TryParse(hoja.Cells[i, 2].Text, out int mes);
+            int.TryParse(hoja.Cells[i, 3].Text, out int ano);
+
+            if (!MesAbierto(mes, ano)) return null;
+            resultado.IDTrabajador = ObtenerIDTrabajadorExpediente(hoja.Cells[i, 1].Text);
+            resultado.IDMes = ObtenerIDMesMesYAno(mes, ano);
+            resultado.Horas = decimal.Parse(hoja.Cells[i, 4].Text);
+            resultado.Dias = decimal.Parse(hoja.Cells[i, 5].Text);
+            resultado.Devengado = decimal.Parse(hoja.Cells[i, 6].Text);
+            return resultado;
+        }
+    }

@@ -1,0 +1,10 @@
+        private void turnosTrabajoBindingSource_AddingNew(object sender, System.ComponentModel.AddingNewEventArgs e)
+        {
+            DataView filaTemporal = turnosTrabajoBindingSource.List as DataView;
+            e.NewObject = filaTemporal.AddNew();
+            (e.NewObject as DataRowView)["Parte_IDParte"] = _parte;
+            (e.NewObject as DataRowView)["Operario_IDOperario"] = _operarioDefault;
+        }
+
+Esto se hace en el evento AddingNew del DataSource al cual quiero agregarle datos( en este caso turnosTrabajoBindingSource )
+ y por supuesto que "Parte_IDParte" es uno de los nombres de los que quiero inicializar.

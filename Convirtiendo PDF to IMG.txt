@@ -1,0 +1,11 @@
+// Esto es utilizando el paquete NUGet Winnovative.PdfToImage
+
+           PdfToImageConverter pdfToImageConverter = new PdfToImageConverter();
+           System.IO.File.Delete(@"E:\Temporal\ejemplo.pdf");
+           System.IO.File.Copy(@"\\192.168.10.6\Fichas Tecnicas\0236.pdf",@"E:\Temporal\ejemplo.pdf");
+           pdfToImageConverter.ConvertPdfPagesToImageFile(@"E:\Temporal\ejemplo.pdf",
+                                                           1,
+                                                           1,
+                                                           @"E:\Temporal",
+                                                           "pdfpage");
+ 

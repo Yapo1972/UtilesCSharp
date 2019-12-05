@@ -1,0 +1,25 @@
+        Dictionary<int, decimal> propPlanUnidadesL = new Dictionary<int, decimal>();
+
+        private void GVTotales_CustomUnboundColumnData(object sender,
+            DevExpress.XtraGrid.Views.Base.CustomColumnDataEventArgs e)
+        {
+            GridView view = sender as GridView;
+            if (view == null) return;
+            int rowIndex = e.ListSourceRowIndex;
+            if (e.Column.FieldName != "propPlanUnidades") return;
+            if (e.IsGetData)
+            {
+                if (!propPlanUnidadesL.ContainsKey(rowIndex))
+                {
+                    propPlanUnidadesL.Add(rowIndex, 0);}
+                e.Value = propPlanUnidadesL[rowIndex];
+            }
+            if (e.IsSetData)
+            {
+                propPlanUnidadesL[rowIndex] = Convert.ToDecimal(e.Value);
+            }
+        }
+
+
+/* Lo que se hace es crear un dicccionario donde se van almacenando los valores que se entran
+   En este ejemplo la columna se llama "propPlanUnidades"  */
