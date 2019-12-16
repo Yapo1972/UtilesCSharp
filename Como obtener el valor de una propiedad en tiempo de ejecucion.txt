@@ -1,0 +1,6 @@
+//Forma de obtener el valor de una propiedad determinada en tiempo de ejecucion
+//No se sabe en tiempo de compilacion el tipo del objeto y por eso primero se obtiene la propiedad y luego
+//su valor en el objeto que este analizando.
+
+   var configuracion = ViewContext.ViewData.Model;
+    var noMostrarAnos = configuracion.GetType().GetProperty("noMostrarAnos")?.GetValue(configuracion);
