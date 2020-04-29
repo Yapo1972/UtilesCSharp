@@ -1,0 +1,22 @@
+<style>
+    td,th{
+        vertical-align:middle!important;
+    }
+    .loader {
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        background: url('@Url.Content("~/Imagenes/cargando.gif")') 50% 50% no-repeat rgb(249,249,249);
+        opacity: .8;
+    }
+</style>
+
+luego en el LoadingElementId poner un div que tenga esta clase.
+
+El Div quedaria de la siguiente manera
+<div class"loader" id="cargando" style="display:none;"></div>
+
+Por supuesto que hay que cargar la imagen cargando.gif en la carpeta imagenes de la aplicación.
